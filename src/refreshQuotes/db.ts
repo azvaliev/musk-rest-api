@@ -13,7 +13,7 @@ const refreshDB = async (tweets: Tweet[]) => {
 		client.SET(tweet.id, tweet.text);
 	}
 
-	await client.disconnect();
+	await client.quit();
 
 	return true;
 };

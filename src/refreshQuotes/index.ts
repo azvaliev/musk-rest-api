@@ -32,7 +32,7 @@ exports.handler = async () => {
 		'max_results': '100',
 	};
 	const allTweets: Tweet[] = [];
-	if (!process.env.BEARER_TOKEN) throw new Error('No Twitter Bearer-Token detected');
+	if (!process.env.TWITTER_BEARER_TOKEN) throw new Error('No Twitter Bearer-Token detected');
 
 	try {
 		for (let i = 0; i < 9; i++) {
@@ -42,7 +42,7 @@ exports.handler = async () => {
 				...params
 			}), {
 				headers: {
-					'Authorization': `Bearer ${process.env.BEARER_TOKEN}`
+					'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
 				}
 			});
 			const tweets = await response.json() as TweetRes;
