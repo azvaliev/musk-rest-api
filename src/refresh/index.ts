@@ -1,6 +1,12 @@
-import { AsyncLocalStorage } from 'async_hooks';
-import fetch from 'node-fetch';
-import { Tweet } from './types';
+const refreshDB = require('./db');
+
+const fetch = require('node-fetch');
+require('dotenv').config();
+
+export interface Tweet {
+	id: string;
+	text: string;
+}
 
 interface TweetReqParams {
 	'exclude': string;
@@ -18,7 +24,7 @@ interface TweetRes {
 	meta: TweetReqMeta;
 }
 
-const refreshTweets = async () => {
+exports.handler = async () => {
 	let paginationToken;
 	const params: TweetReqParams = {
 		'exclude': 'retweets,replies',
@@ -26,6 +32,7 @@ const refreshTweets = async () => {
 		'max_results': '100',
 	};
 	const allTweets: Tweet[] = [];
+	if (!process.env.BEARER_TOKEN) throw new Error('No Twitter Bearer-Token detected');
 
 	try {
 		for (let i = 0; i < 9; i++) {
@@ -35,7 +42,7 @@ const refreshTweets = async () => {
 				...params
 			}), {
 				headers: {
-					'Authorization': `Bearer ${process.env.BEARER_TOKEN!}`
+					'Authorization': `Bearer ${process.env.BEARER_TOKEN}`
 				}
 			});
 			const tweets = await response.json() as TweetRes;
@@ -53,8 +60,5 @@ const refreshTweets = async () => {
 		text: tweet.text.replace(/(\n)/g, ' ').replace(/(\s+)/g, ' ')
 	}));
 
-	return formattedTweets;
-
+	return await refreshDB(formattedTweets);
 };
-
-export default refreshTweets;
