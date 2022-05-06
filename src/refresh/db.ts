@@ -1,5 +1,5 @@
-import redis from 'redis';
-import { Tweet } from '../types';
+const redis = require('redis');
+import { Tweet } from '.';
 
 const refreshDB = async (tweets: Tweet[]) => {
 
@@ -13,6 +13,9 @@ const refreshDB = async (tweets: Tweet[]) => {
 		client.SET(tweet.id, tweet.text);
 	}
 
+	await client.disconnect();
+
+	return true;
 };
 
-export default refreshDB;
+module.exports = refreshDB;
